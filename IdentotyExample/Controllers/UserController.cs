@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -51,46 +53,46 @@ namespace IdentotyExample.Controllers
         }
 
         [HttpPost]
-        [Route("LogIn")]
+        [Route("Login")]
         public async Task<ActionResult> LogIn(LogInData logInData)
         {
             var signInResult = await _signInManager.PasswordSignInAsync(logInData.Username, logInData.Password, false, false);
-            //if (signInResult.Succeeded)
-            //{
-            //    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:JwtPrivateKey"]));
-            //    var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            if (signInResult.Succeeded)
+            {
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:JwtPrivateKey"]));
+                var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-            //    var accessTokenExpires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JWT:AccessTokenDurationInMinutes"]));
+                var accessTokenExpires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JWT:AccessTokenDurationInMinutes"]));
 
-            //    var loggedUser = await _userManager.FindByEmailAsync(logInData.Username);
+                var loggedUser = await _userManager.FindByEmailAsync(logInData.Username);
 
-            //    var claimsAccessToken = new List<Claim>
-            //    {
-            //        new Claim(JwtRegisteredClaimNames.Sub, loggedUser.Id),
-            //        new Claim(JwtRegisteredClaimNames.UniqueName, loggedUser.UserName)
-            //    };
-
-
-            //    var accessToken = new JwtSecurityToken(
-            //        signingCredentials: signingCredentials,
-            //        claims: claimsAccessToken,
-            //        audience: _configuration["JWT:Audience"],
-            //        issuer: _configuration["JWT:Issuer"],
-            //        expires: accessTokenExpires,
-            //        notBefore: DateTime.UtcNow
-            //    );
+                var claimsAccessToken = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, loggedUser.Id),
+                    new Claim(JwtRegisteredClaimNames.UniqueName, loggedUser.UserName)
+                };
 
 
-            //    return Ok(new AuthResultDTO
-            //    {
-            //        Token = new JwtSecurityTokenHandler().WriteToken(accessToken),
-            //        TokenExpires = accessTokenExpires
-            //    });
-            //}
-            //else
-            //{
-            //    return NotFound();
-            //}
+                var accessToken = new JwtSecurityToken(
+                    signingCredentials: signingCredentials,
+                    claims: claimsAccessToken,
+                    audience: _configuration["JWT:Audience"],
+                    issuer: _configuration["JWT:Issuer"],
+                    expires: accessTokenExpires,
+                    notBefore: DateTime.UtcNow
+                );
+
+
+                return Ok(new AuthResultDto
+                {
+                    Token = new JwtSecurityTokenHandler().WriteToken(accessToken),
+                    TokenExpires = accessTokenExpires
+                });
+            }
+            else
+            {
+                return NotFound();
+            }
             return Ok(signInResult);
         }
 
@@ -107,6 +109,15 @@ namespace IdentotyExample.Controllers
             };
             return Ok(user);
         }
+
+        [HttpGet]
+        [Route("GetUsers")]
+        public async Task<ActionResult> GetUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
+        }
+
 
         [HttpPost]
         [Route("AddAddress")]

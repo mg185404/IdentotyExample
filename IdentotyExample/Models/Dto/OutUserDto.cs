@@ -1,4 +1,6 @@
-﻿namespace IdentotyExample.Models.Dto
+﻿using System.Text.Json.Serialization;
+
+namespace IdentotyExample.Models.Dto
 {
     public class OutUserDto
     {

@@ -44,7 +44,7 @@ namespace IdentotyExample.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("IdentotyExample.Models.User", b =>
