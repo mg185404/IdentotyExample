@@ -48,6 +48,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
 
+builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 
