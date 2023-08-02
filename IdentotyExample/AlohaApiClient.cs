@@ -1,24 +1,19 @@
 ﻿using IdentotyExample.Models.Dto;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace IdentotyExample
 {
     public class AlohaApiClient
     {
-        private readonly HttpClient _httpClient;
-        public AlohaApiClient()
+        private readonly IHttpClientFactory _httpClientFactory;
+        public AlohaApiClient(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://api.alohaorderonline.com")
-            };
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClientFactory = httpClientFactory;
         }
 
-        public void AddDefaultRequestHeaders(Action<HttpRequestHeaders> action) {
-            action?.Invoke(_httpClient.DefaultRequestHeaders);
-        }
-        
+        private HttpClient _httpClient { get => _httpClientFactory.CreateClient("AlohaApiClient"); }
 
         public async Task<string> GetAsync(string endpoint)
         {
@@ -59,8 +54,5 @@ namespace IdentotyExample
             var variable = await response.Content.ReadAsStringAsync();
             return variable;
         }
-
-
     }
-
 }

@@ -16,21 +16,9 @@ namespace IdentotyExample.Controllers
     public class AlohaController : ControllerBase
     {
         private readonly AlohaApiClient _client;
-        private string credentials;
-
-
-        public AlohaController()
+        public AlohaController(AlohaApiClient client)
         {
-            _client = new AlohaApiClient();
-            string username = "api-demo@ds.com";
-            string password = "DigitalNCRDigital123@";
-            credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
-
-            _client.AddDefaultRequestHeaders(headers =>
-            {
-                headers.Add("X-Api-CompanyCode", "DLEC001");
-                headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-            });
+            _client = client;      
         }
 
 
@@ -127,21 +115,6 @@ namespace IdentotyExample.Controllers
         {
             try
             {
-                //order.SiteId = inOrder.SiteId;
-                //order.OrderMode = inOrder.OrderMode;
-                //order.OrderId = inOrder.OrderId;
-                //order.PromiseDateTime = inOrder.PromiseDateTime;
-                //order.PaymentMode = inOrder.PaymentMode;
-                //order.OrderCustomer = inOrder.OrderCustomer;
-
-
-                //inOrder.siteid = order.siteid;
-                //inOrder.ordermode = order.ordermode;
-                //inOrder.orderid = order.orderid;
-                //inOrder.promisedatetime = order.promisedatetime;
-                //inOrder.paymentmode = order.paymentmode;
-                //inOrder.ordercustomer = order.ordercustomer;
-
                 var result = CreateInOrder();
 
                 string jsonData = JsonSerializer.Serialize(result);

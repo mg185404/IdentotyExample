@@ -1,9 +1,12 @@
+using IdentotyExample;
 using IdentotyExample.Data;
 using IdentotyExample.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,8 +51,21 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
 
-builder.Services.AddHttpClient();
 
+//builder.Services.AddSingleton<AlohaApiClient>();
+
+builder.Services.AddHttpClient("AlohaApiClient", client =>
+{
+    client.BaseAddress = new Uri("https://api.alohaorderonline.com/");
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    string username = "api-demo@ds.com";
+    string password = "DigitalNCRDigital123@";
+    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+    client.DefaultRequestHeaders.Add("X-Api-CompanyCode", "DLEC001");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+});
+
+builder.Services.AddSingleton<AlohaApiClient>();
 
 var app = builder.Build();
 
