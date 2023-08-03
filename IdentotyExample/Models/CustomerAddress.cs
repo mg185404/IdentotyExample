@@ -1,6 +1,6 @@
-﻿using IdentotyExample.Enums;
+﻿using static IdentotyExample.Enums.Enums;
 
-namespace IdentotyExample.Models
+namespace AlohaAPIExample.Models
 {
     public class CustomerAddress
     {
@@ -14,8 +14,7 @@ namespace IdentotyExample.Models
         public string City { get; set; }
         public string State { get; set; }
         public string Postal { get; set; }
-        public Dictionary<object,object> ExtraData { get; set; }
+        public Dictionary<object, object> ExtraData { get; set; }
         public string AddressNotes { get; set; }
-
     }
 }

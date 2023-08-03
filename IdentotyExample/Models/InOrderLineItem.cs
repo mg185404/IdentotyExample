@@ -1,14 +1,14 @@
-﻿using IdentotyExample.Enums;
+﻿using static IdentotyExample.Enums.Enums;
 
-namespace IdentotyExample.Models
+namespace AlohaAPIExample.Models
 {
     public class InOrderLineItem
     {
         public int ItemLineNumber { get; set; }
         public int SalesItemId { get; set; }
         public int MenuItemId { get; set; }
-        public string SpecialInstructions { get; set; }
-        public string RecipientName { get; set; }
+        public string? SpecialInstructions { get; set; }
+        public string? RecipientName { get; set; }
         public int Quantity { get; set; }
         public int NextModifierSequenceNumber { get; set; }
         public ItemOrderingMode ItemOrderingMode { get; set; }
@@ -18,7 +18,7 @@ namespace IdentotyExample.Models
         public SectionType Section2Type { get; set; }
         public SectionType Section3Type { get; set; }
         public SectionType Section4Type { get; set; }
-        public InOrderLineItemModifier Modifiers { get; set; }
+        public List<InOrderLineItemModifier>? Modifiers { get; set; }
         public int ReferenceId { get; set; }
     }
 }

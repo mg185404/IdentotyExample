@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class SalesItem
     {
         public string id { get; set; }
@@ -28,4 +26,3 @@
         public bool IsAvailable { get; set; }
         public List<CustomField> CustomFields { get; set; }
     }
-}

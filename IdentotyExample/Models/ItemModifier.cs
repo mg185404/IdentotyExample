@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class ItemModifier
     {
         public string id { get; set; }
@@ -11,4 +9,3 @@
         public int Weight { get; set; }
         public double? CaloricValue { get; set; }
     }
-}

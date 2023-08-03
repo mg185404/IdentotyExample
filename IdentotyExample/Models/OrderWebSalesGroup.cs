@@ -1,4 +1,4 @@
-﻿namespace IdentotyExample.Models
+﻿namespace AlohaAPIExample.Models
 {
     public class OrderWebSalesGroup
     {

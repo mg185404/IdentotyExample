@@ -1,4 +1,5 @@
-﻿using IdentotyExample.Enums;
+﻿using IdentotyExample.Clients;
+using IdentotyExample.Enums;
 using IdentotyExample.Models;
 using IdentotyExample.Models.Dto;
 using Microsoft.AspNet.SignalR.Client.Http;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using static IdentotyExample.Enums.Enums;
 
 namespace IdentotyExample.Controllers
 {
@@ -18,7 +20,7 @@ namespace IdentotyExample.Controllers
         private readonly AlohaApiClient _client;
         public AlohaController(AlohaApiClient client)
         {
-            _client = client;      
+            _client = client;
         }
 
 
@@ -30,8 +32,7 @@ namespace IdentotyExample.Controllers
 
             try
             {
-                var result = await _client.GetAsync($"v1/NearbySites/{searchTerm}?getNearbySitesForFirstGeocodeResult={getNearbySitesForFirstGeocodeResult}&includeAllSites={includeAllSites}&offset={offset}&limit={limit}");
-                var nearbySite = JsonSerializer.Deserialize<OutNearbySearch>(result);
+                var result = await _client.GetNearbySearchDesirialized(searchTerm, getNearbySitesForFirstGeocodeResult, includeAllSites, offset, limit);
                 return Ok(result);
             }
             catch (HttpRequestException)
@@ -42,13 +43,12 @@ namespace IdentotyExample.Controllers
 
         [HttpGet]
         [Route("SearchByCoordinate")]
-        public async Task<ActionResult> GetNearbySearchByCoordinate(double latitude = 44.8125, double longitude = 20.4612, string orderMode = "Pickup",
-            int offset = 0, int limit = 5, bool includeAllSites = false, string companyCode = "DLEC001")
+        public async Task<ActionResult> GetNearbySearchByCoordinate(double latitude = 44.8125, double longitude = 20.4612,
+           int offset = 0, int limit = 5, bool includeAllSites = false, string? orderMode = null, string? companyCode = null)
         {
             try
             {
-                var result = await _client.GetAsync($"v1/NearbySites/{latitude}/{longitude}?orderMode={orderMode}&offset={offset}&limit={limit}&includeAllSites={includeAllSites}&companyCode={companyCode}");
-                List<OutNearbySitesByCoordinate> sites = JsonSerializer.Deserialize<List<OutNearbySitesByCoordinate>>(result);
+                var result = await _client.GetNearbySearchByCoordinateDesirialized(latitude, longitude, orderMode, offset, limit, includeAllSites, companyCode);
                 return Ok(result);
             }
             catch (HttpRequestException)
@@ -60,13 +60,11 @@ namespace IdentotyExample.Controllers
 
         [HttpGet]
         [Route("GetMenusBySiteId")]
-        public async Task<ActionResult> GetMenusBySiteId(int siteId, OrderModeType orderMode, DateTime promiseTime, bool includeInvisible = false)
+        public async Task<ActionResult> GetMenusBySiteId(int siteId, bool includeInvisible = false, OrderModeType? orderMode = null, DateTime? promiseTime = null)
         {
             try
             {
-                promiseTime = DateTime.Now.AddHours(1);
-                var result = await _client.GetAsync($"v1/Menus/{siteId}?promiseTime={promiseTime}&includeInvisible={includeInvisible}&orderMode={orderMode}");
-                var root = JsonSerializer.Deserialize<OutMenus>(result);
+                var result = await _client.GetMenusDesirialized(siteId, includeInvisible, orderMode, promiseTime);
                 return Ok(result);
             }
             catch (HttpRequestException)
@@ -81,7 +79,23 @@ namespace IdentotyExample.Controllers
         {
             try
             {
-                var result = await _client.GetAsync($"v1/Times/{siteId}/{orderMode}?noCache={noCache}");
+                var result = await _client.GetTimeDesirialized(siteId, orderMode, noCache);
+                return Ok(result);
+            }
+            catch (HttpRequestException)
+            {
+                throw;
+            }
+        }
+
+
+        [HttpPut]
+        [Route("UpsertOrder")]
+        public async Task<ActionResult> UpsertOrder([FromBody] Order requst, int siteId, bool verbose = false)
+        {
+            try
+            {
+                var result = await _client.PutOrder(requst, siteId, verbose);
                 return Ok(result);
             }
             catch (HttpRequestException)
@@ -93,77 +107,57 @@ namespace IdentotyExample.Controllers
 
 
 
-        private InOrder order = new InOrder
-        {
-            SiteId = 1,
-            OrderId = null,
-            PromiseDateTime = DateTime.Now.AddHours(1),
-            OrderMode = OrderModeType.Pickup,
-            PaymentMode = PaymentMode.PaidOnline,
-            Customer = new OrderCustomer
-            {
-                EMail = "proba@gmail.com",
-                FirstName = "Test",
-                LastName = "Test",
-            }
-        };
 
 
-        [HttpPut]
-        [Route("UpsertOrder")]
-        public async Task<ActionResult> UpsertOrder(int siteId, bool verbose = false)
-        {
-            try
-            {
-                var result = CreateInOrder();
-
-                string jsonData = JsonSerializer.Serialize(result);
-                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-                var result2 = await _client.PutAsync($"v1/Orders/{siteId}", content);
-                return Ok(result2);
-
-            }
-            catch (HttpRequestException)
-            {
-                throw;
-            }
-        }
+        //private InOrder order = new InOrder
+        //{
+        //    SiteId = 1,
+        //    OrderId = null,
+        //    PromiseDateTime = DateTime.Now.AddHours(1),
+        //    OrderMode = OrderModeType.Pickup,
+        //    PaymentMode = PaymentMode.PaidOnline,
+        //    Customer = new OrderCustomer
+        //    {
+        //        EMail = "proba@gmail.com",
+        //        FirstName = "Test",
+        //        LastName = "Test",
+        //    }
+        //};
 
 
-        private InOrder CreateInOrder()
-        {
+        //private InOrder CreateInOrder()
+        //{
 
-            InOrder result = new InOrder();
+        //    InOrder result = new InOrder();
 
-            result.SiteId = 1;
-            result.PromiseDateTime = new DateTime(2023,8,31);
-            result.OrderMode = OrderModeType.Pickup;
-            result.Channel = "Unknown";
-            result.PaymentMode = PaymentMode.PaymentDeferred;
-            result.ComboItems = new List<ComboItem>();
-            result.Guests = new List<Guest>();
-            result.Customer = new OrderCustomer
-            {
-                id = "2",
-                EMail = "Test@gamil.com",
-                FirstName = "Test",
-                LastName = "Test"
-            };
-            result.LineItems = new List<InOrderLineItem>
-            {
-                new InOrderLineItem
-                {
-                 SalesItemId = 40067,
-                 MenuItemId = 30008
-                }
-            };
-            return result;
-        }
+        //    result.SiteId = 1;
+        //    result.PromiseDateTime = new DateTime(2023, 8, 31);
+        //    result.OrderMode = OrderModeType.Pickup;
+        //    result.Channel = "Unknown";
+        //    result.PaymentMode = PaymentMode.PaymentDeferred;
+        //    result.ComboItems = new List<ComboItem>();
+        //    result.Guests = new List<Guest>();
+        //    result.Customer = new OrderCustomer
+        //    {
+        //        id = "2",
+        //        EMail = "Test@gamil.com",
+        //        FirstName = "Test",
+        //        LastName = "Test"
+        //    };
+        //    result.LineItems = new List<InOrderLineItem>
+        //    {
+        //        new InOrderLineItem
+        //        {
+        //         SalesItemId = 40067,
+        //         MenuItemId = 30008
+        //        }
+        //    };
+        //    return result;
+        //}
 
 
 
-       
+
 
 
 

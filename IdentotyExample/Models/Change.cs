@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class Change
     {
         public string id { get; set; }
@@ -8,4 +6,3 @@
         public string Start { get; set; }
         public string End { get; set; }
     }
-}

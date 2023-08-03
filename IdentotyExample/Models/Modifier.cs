@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class Modifier
     {
         public string id { get; set; }
@@ -17,4 +15,3 @@
         public List<DefaultOption> DefaultOptions { get; set; }
         public List<CustomField> CustomFields { get; set; }
     }
-}

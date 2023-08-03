@@ -1,6 +1,4 @@
-﻿using IdentotyExample.Enums;
-
-namespace IdentotyExample.Models
+﻿namespace AlohaAPIExample.Models
 {
     public class InOrderLineItemModifier
     {
@@ -20,6 +18,6 @@ namespace IdentotyExample.Models
         public int FreeQuantity { get; set; }
         public double UnitPriceOverride { get; set; }
         public bool EnablePriceOverride { get; set; }
-
+        public List<InOrderLineItemModifier> Modifiers { get; set; }
     }
 }

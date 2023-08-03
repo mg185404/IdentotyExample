@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class SalesGroup
     {
         public string id { get; set; }
@@ -18,4 +16,3 @@
         public int DefaultSalesItemId { get; set; }
         public string DisplayName { get; set; }
     }
-}

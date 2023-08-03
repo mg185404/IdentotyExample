@@ -1,6 +1,6 @@
-﻿using IdentotyExample.Enums;
+﻿using static IdentotyExample.Enums.Enums;
 
-namespace IdentotyExample.Models
+namespace AlohaAPIExample.Models
 {
     public class ComboItem
     {
@@ -10,5 +10,6 @@ namespace IdentotyExample.Models
         public string ComboName { get; set; }
         public bool IsVisible { get; set; }
         public List<OrderWebSalesGroup> WebSalesGroupLineItems { get; set; }
+
     }
 }

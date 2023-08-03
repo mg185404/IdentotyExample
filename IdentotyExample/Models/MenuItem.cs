@@ -1,7 +1,3 @@
-﻿using IdentotyExample.Enums;
-
-namespace IdentotyExample.Models
-{
     public class MenuItem
     {
         public string id { get; set; }
@@ -28,4 +24,3 @@ namespace IdentotyExample.Models
         public List<CustomField> CustomFields { get; set; }
         public List<int> SupportedOrderModes { get; set; }
     }
-}

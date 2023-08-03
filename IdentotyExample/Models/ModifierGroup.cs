@@ -1,5 +1,3 @@
-﻿namespace IdentotyExample.Models
-{
     public class ModifierGroup
     {
         public string id { get; set; }
@@ -25,4 +23,3 @@
         public string CaloricServingUnit { get; set; }
         public List<CustomField> CustomFields { get; set; }
     }
-}
