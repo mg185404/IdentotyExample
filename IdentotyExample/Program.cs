@@ -27,6 +27,8 @@ builder.Services.AddDbContext<DataContext>(options =>
         .LogTo(Console.WriteLine, LogLevel.Information);
 });
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,20 +56,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
 
-
-//builder.Services.AddSingleton<AlohaApiClient>();
-
-//builder.Services.AddHttpClient("AlohaApiClient", client =>
-//{
-//    client.BaseAddress = new Uri("https://api.alohaorderonline.com/");
-//    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//    client.DefaultRequestHeaders.Add("PlatformType", "application/json");
-//    string username = "api-demo@ds.com";
-//    string password = "DigitalNCRDigital123@";
-//    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
-//    client.DefaultRequestHeaders.Add("X-Api-CompanyCode", "DLEC001");
-//    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-//});
 
 builder.Services.AddHttpClient("AlohaApiClient", client =>
 {

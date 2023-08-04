@@ -54,49 +54,55 @@ namespace IdentotyExample.Controllers
             public string Password { get; set; }
         }
 
-        //[HttpPost]
-        //[Route("Login")]
-        //public async Task<ActionResult> LogIn(LogInData logInData)
-        //{
-        //    var signInResult = await _signInManager.PasswordSignInAsync(logInData.Username, logInData.Password, false, false);
-        //    if (signInResult.Succeeded)
-        //    {
-        //        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:JwtPrivateKey"]));
-        //        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        public class AuthResultDto
+        {
+            public string Token { get; set; }
+            public DateTime TokenExpires { get; set; }
+        }
 
-        //        var accessTokenExpires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JWT:AccessTokenDurationInMinutes"]));
+        [HttpPost]
+        [Route("Login")]
+        public async Task<ActionResult> LogIn(LogInData logInData)
+        {
+            var signInResult = await _signInManager.PasswordSignInAsync(logInData.Username, logInData.Password, false, false);
+            if (signInResult.Succeeded)
+            {
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:JwtPrivateKey"]));
+                var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-        //        var loggedUser = await _userManager.FindByEmailAsync(logInData.Username);
+                var accessTokenExpires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JWT:AccessTokenDurationInMinutes"]));
 
-        //        var claimsAccessToken = new List<Claim>
-        //        {
-        //            new Claim(JwtRegisteredClaimNames.Sub, loggedUser.Id),
-        //            new Claim(JwtRegisteredClaimNames.UniqueName, loggedUser.UserName)
-        //        };
+                var loggedUser = await _userManager.FindByEmailAsync(logInData.Username);
 
-
-        //        var accessToken = new JwtSecurityToken(
-        //            signingCredentials: signingCredentials,
-        //            claims: claimsAccessToken,
-        //            audience: _configuration["JWT:Audience"],
-        //            issuer: _configuration["JWT:Issuer"],
-        //            expires: accessTokenExpires,
-        //            notBefore: DateTime.UtcNow
-        //        );
+                var claimsAccessToken = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, loggedUser.Id),
+                    new Claim(JwtRegisteredClaimNames.UniqueName, loggedUser.UserName)
+                };
 
 
-        //        return Ok(new AuthResultDto
-        //        {
-        //            Token = new JwtSecurityTokenHandler().WriteToken(accessToken),
-        //            TokenExpires = accessTokenExpires
-        //        });
-        //    }
-        //    else
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(signInResult);
-        //}
+                var accessToken = new JwtSecurityToken(
+                    signingCredentials: signingCredentials,
+                    claims: claimsAccessToken,
+                    audience: _configuration["JWT:Audience"],
+                    issuer: _configuration["JWT:Issuer"],
+                    expires: accessTokenExpires,
+                    notBefore: DateTime.UtcNow
+                );
+
+
+                return Ok(new AuthResultDto
+                {
+                    Token = new JwtSecurityTokenHandler().WriteToken(accessToken),
+                    TokenExpires = accessTokenExpires
+                });
+            }
+            else
+            {
+                return NotFound();
+            }
+            return Ok(signInResult);
+        }
 
         [HttpGet]
         [Route("GetUser")]

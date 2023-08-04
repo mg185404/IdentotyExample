@@ -1,4 +1,5 @@
-﻿using IdentotyExample.Enums;
+﻿using AutoMapper;
+using IdentotyExample.Enums;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
@@ -11,9 +12,11 @@ namespace IdentotyExample.Clients
     public class AlohaApiClient : IAlohaApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        public AlohaApiClient(IHttpClientFactory httpClientFactory)
+        private readonly IMapper _mapper;
+        public AlohaApiClient(IHttpClientFactory httpClientFactory, IMapper mapper)
         {
             _httpClientFactory = httpClientFactory;
+            _mapper = mapper;
         }
 
         private HttpClient _httpClient { get => _httpClientFactory.CreateClient("AlohaApiClient"); }
@@ -25,7 +28,6 @@ namespace IdentotyExample.Clients
             {
                 var urlBuilder = new StringBuilder($"v1/NearbySites/{searchTerm}?getNearbySitesForFirstGeocodeResult={getNearbySitesForFirstGeocodeResult}&includeAllSites={includeAllSites}&offset={offset}&limit={limit}");
                 string url = urlBuilder.ToString();
-                string endpoint = $"GET {url}";
 
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
@@ -94,8 +96,6 @@ namespace IdentotyExample.Clients
             {
                 var urlBuilder = new StringBuilder($"v1/Times/{siteId}/{orderMode}?noCache={noCache}");
                 string url = urlBuilder.ToString();
-
-
 
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
